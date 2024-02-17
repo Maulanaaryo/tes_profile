@@ -16,11 +16,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
-    profileData = _getProfileData();
     super.initState();
+    _refreshProfileData();
   }
 
-  Future<void> _refreshProfileData() async {
+  void _refreshProfileData() {
     setState(() {
       profileData = _getProfileData();
     });
@@ -81,9 +81,12 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: () async {},
+        onRefresh: () async {
+          _refreshProfileData();
+        },
         child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          physics: const AlwaysScrollableScrollPhysics(),
           child: FutureBuilder<ProfileResponseModel>(
             future: profileData,
             builder: (context, snapshot) {
@@ -92,8 +95,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: CircularProgressIndicator(),
                 );
               } else if (snapshot.hasError) {
-                return const Center(
-                  child: Text('Error Profile Page'),
+                return Container(
+                  margin: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.4,
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Error',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
                 );
               } else {
                 final profile = snapshot.data!.data;
